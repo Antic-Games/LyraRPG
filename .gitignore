@@ -141,3 +141,13 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+ShooterCore/*
+ShooterExplorer/*
+ShooterMaps/*
+ShooterTests/*
+TopDownArena/*
+
+.DS_Store
+
+
