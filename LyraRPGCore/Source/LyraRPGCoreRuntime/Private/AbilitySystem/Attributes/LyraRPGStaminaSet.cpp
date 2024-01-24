@@ -23,6 +23,7 @@ UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cheat_UnlimitedStamina, "Cheat.UnlimitedStamina",
 ULyraRPGStaminaSet::ULyraRPGStaminaSet()
     : Stamina(100.0f)
     , MaxStamina(100.0f)
+    , BaseRecuperate(0.0f)
 {
     bOutOfStamina = false;
     MaxStaminaBeforeAttributeChange = 0.0f;
@@ -35,6 +36,8 @@ void ULyraRPGStaminaSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
     DOREPLIFETIME_CONDITION_NOTIFY(ULyraRPGStaminaSet, Stamina, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(ULyraRPGStaminaSet, MaxStamina, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(ULyraRPGStaminaSet, BaseRecuperate, COND_OwnerOnly, REPNOTIFY_Always);
+
 }
 
 void ULyraRPGStaminaSet::OnRep_Stamina(const FGameplayAttributeData& OldValue)
@@ -81,6 +84,11 @@ bool ULyraRPGStaminaSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData
     return true;
 }
 
+void ULyraRPGStaminaSet::OnRep_BaseRecuperate(const FGameplayAttributeData& OldValue)
+{
+    GAMEPLAYATTRIBUTE_REPNOTIFY(ULyraRPGStaminaSet, BaseRecuperate, OldValue);
+}
+
 void ULyraRPGStaminaSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
     Super::PostGameplayEffectExecute(Data);
@@ -99,11 +107,11 @@ void ULyraRPGStaminaSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
     AActor* Instigator = EffectContext.GetOriginalInstigator();
     AActor* Causer = EffectContext.GetEffectCauser();
 
-    if (Data.EvaluatedData.Attribute == GetRecuperiatingAttribute())
+    if (Data.EvaluatedData.Attribute == GetRecuperatingAttribute())
     {
         // Convert into +Stamina and then clamo
-        SetStamina(FMath::Clamp(GetStamina() + GetRecuperiating(), MinimumStamina, GetMaxStamina()));
-        SetRecuperiating(0.0f);
+        SetStamina(FMath::Clamp(GetStamina() + GetRecuperating(), MinimumStamina, GetMaxStamina()));
+        SetRecuperating(0.0f);
     }
     else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
     {
